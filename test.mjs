@@ -55,7 +55,8 @@ console.log('PASS: native SQLite persistence, additive migration, empty/custom 7
 const scan=await experimental_scanPublicSdkOnly(process.cwd(),{allow:[/^(react|react-dom)(\/.*)?$/, /^(esbuild|better-sqlite3|jsdom)$/, /^@testing-library\//, /^@playwright\//, /^@get-bb\/plugin-sdk\/testing(\/app)?$/]});
 assert.deepEqual(scan.violations,[]);assert.deepEqual(scan.privateDependencies,[]);
 const {default:plugin}=await import('./dist/server.js');
-const {bb,harness}=createFakePluginHost({pluginId:'pokemon-pc',sdk:{threads:{get:async()=>makeThreadResponse({id:'synthetic-chat'}),events:{list:async()=>[start,work(2)]}}}});
+let runtimeStatus='idle';
+const {bb,harness}=createFakePluginHost({pluginId:'pokemon-pc',sdk:{threads:{get:async()=>makeThreadResponse({id:'synthetic-chat',status:runtimeStatus}),events:{list:async args=>{assert.ok(Number(args.limit)<=100);return [start,work(2)];}}}}});
 await plugin(bb);
 assert.deepEqual((await harness.behavior.callRpc('state',null)).agents,[]);
 const agent=await harness.behavior.callRpc('create_agent',fields);
@@ -68,5 +69,7 @@ assert.equal(harness.registrations.instructionProvider({threadId:'other',project
 const task=await harness.behavior.callRpc('add',{title:'Demo task'});assert.equal((await harness.behavior.runCli(['done',task.id])).exitCode,1);assert.equal((await harness.behavior.runCli(['done',task.id,'Verified in synthetic test'])).exitCode,0);
 assert.equal((await harness.behavior.callRpc('activity',{threadId:'synthetic-chat'})).xp,12);
 assert.equal((await harness.behavior.callRpc('activity',{threadId:'synthetic-chat'})).xp,12);
+assert.equal((await harness.behavior.callRpc('activity',{threadId:'synthetic-chat'})).active,false);
+runtimeStatus='active';assert.equal((await harness.behavior.callRpc('activity',{threadId:'synthetic-chat'})).active,true);
 await harness.lifecycle.dispose();
 console.log('PASS: public SDK scan, RPC validation, CLI evidence, custom instructions, modes, activity RPC.');

@@ -10,7 +10,7 @@ Requires **BB 0.49+**, **plugin SDK 0.6.132+**, Git, and the separate [Apple Not
 
 ```sh
 bb plugin install git:https://github.com/alanagoyal/apple-notes-bb-theme.git@main
-bb plugin install git:https://github.com/pdaly23442/bb-pokemon-pc.git@v0.1.0
+bb plugin install git:https://github.com/pdaly23442/bb-pokemon-pc.git@v0.1.1
 bb theme set plugin:pokemon-pc:daylight
 ```
 

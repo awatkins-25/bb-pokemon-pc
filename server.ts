@@ -13,10 +13,10 @@ export default function plugin(bb:BbPluginApi){
   update_agent:async ({id,revision,...fields})=>change(()=>store.updateAgent(id,revision,fields)),
   archive_agent:async i=>change(()=>store.archiveAgent(i.id,i.revision,i.archived)),
   activity:async ({threadId})=>{
-   await bb.sdk.threads.get({threadId});
+   const thread=await bb.sdk.threads.get({threadId});
    const before=store.activityState(threadId);
-   const events=await bb.sdk.threads.events.list({threadId,afterSeq:String(before.lastSeq),limit:'200',order:'asc',types:['turn/started','item/completed','turn/plan/updated','turn/completed']});
-   return {...store.applyActivity(threadId,events),catchingUp:events.length===200};
+   const events=await bb.sdk.threads.events.list({threadId,afterSeq:String(before.lastSeq),limit:'100',order:'asc',types:['turn/started','item/completed','turn/plan/updated','turn/completed']});
+   return {...store.applyActivity(threadId,events),catchingUp:events.length===100,active:['active','starting','stopping'].includes(thread.status)};
   },
   add:async input=>change(()=>store.add(input)),
   set_done:async i=>change(()=>store.done(i.id,i.done,i.revision)),
