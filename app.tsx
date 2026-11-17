@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { definePluginApp, useRpc, useRealtime, useRealtimeConnectionState, useBbContext, type ExperimentalThreadContextSegmentProps } from '@get-bb/plugin-sdk/app';
-import { type rpcContract, type PCState, type Activity } from './contract';
+import { definePluginApp, useRpc, useRealtime, useRealtimeConnectionState, useBbContext, useComposer, type ExperimentalThreadContextSegmentProps } from '@get-bb/plugin-sdk/app';
+import { type rpcContract, type PCState, type Activity, type Agent, type PendingLead } from './contract';
 import { ballSvg } from './balls';
 import { spriteUrl } from './pokedex';
 import { systems, systemModes, type SystemMode } from './systems';
-import { AgentEditor, Party, Profile, Tasks, ExpBar, displayAgent } from './components';
+import { AgentEditor, Party, Profile, Tasks, ExpBar, Sprite, Ball, displayAgent } from './components';
 import './app.css';
 
 function usePC() {
@@ -30,7 +30,7 @@ export function Boxes() {
  async function action(fn:()=>Promise<unknown>,message='') {setBusy(true);pc.setError('');try{await fn();await pc.refresh();setNotice(message);return true;}catch(e){pc.setError(String(e));return false;}finally{setBusy(false);}}
  return <div className="ppc-boxes" data-bb-plugin="pokemon-pc" data-bb-plugin-root="">
   <Party agents={pc.state?.agents??[]} active={active} onSelect={id=>{pc.setError('');setSelected(id);}} onAdd={()=>{pc.setError('');setSelected(null);setEditing(true);}} busy={busy} onRestore={a=>void action(()=>pc.rpc.call('archive_agent',{id:a.id,revision:a.revision,archived:false}),'Agent restored.')}/>
-  <Tasks state={pc.state} busy={busy} undo={!!undo} onAdd={fields=>action(()=>pc.rpc.call('add',fields),'Task saved.')} onDone={t=>void action(()=>pc.rpc.call('set_done',{id:t.id,done:!t.done,revision:t.revision}),t.done?'Task reopened.':'Task completed.')} onClear={()=>void action(async()=>{const result=await pc.rpc.call('clear');setUndo(result.token);},'Finished tasks archived.')} onRestore={()=>void action(async()=>{await pc.rpc.call('restore',{token:undo});setUndo('');},'Tasks restored.')}/>
+  <Tasks state={pc.state} busy={busy} undo={!!undo} onAdd={fields=>action(()=>pc.rpc.call('add',fields),'Task saved.')} onDone={t=>void action(()=>pc.rpc.call('set_done',{id:t.id,done:!t.done,revision:t.revision}),t.done?'Task reopened.':'Task completed.')} onOwner={(t,owner)=>void action(()=>pc.rpc.call('set_owner',{id:t.id,owner,revision:t.revision}),'Task agent updated.')} onClear={()=>void action(async()=>{const result=await pc.rpc.call('clear');setUndo(result.token);},'Finished tasks archived.')} onRestore={()=>void action(async()=>{await pc.rpc.call('restore',{token:undo});setUndo('');},'Tasks restored.')}/>
   {pc.error&&!visible&&<p className="ppc-error" role="alert">{pc.error}<button onClick={()=>void pc.refresh()}>Retry</button></p>}<p className="ppc-announcement" role="status">{notice}</p>
   {createPortal(<dialog className="ppc-dialog" ref={dialog} data-bb-plugin="pokemon-pc" data-bb-plugin-root="" onCancel={close} onClick={e=>{if(e.target===e.currentTarget)close();}}>
    {editing?<AgentEditor key={selected??'new'} agent={agent} busy={busy} error={pc.error} onCancel={close} onSave={async (fields,revision)=>{if(await action(()=>agent?pc.rpc.call('update_agent',{...fields,id:agent.id,revision:revision!}):pc.rpc.call('create_agent',fields),'Agent saved.'))close();}}/>:agent&&<Profile key={agent.id} agent={agent} agents={pc.state?.agents??[]} active={active} threadId={threadId} busy={busy} error={pc.error} onClose={close} onEdit={()=>setEditing(true)} onArchive={async()=>{if(await action(()=>pc.rpc.call('archive_agent',{id:agent.id,revision:agent.revision,archived:true}),'Agent archived.'))close();}} onAssign={async(helpers,systemMode)=>{if(threadId&&await action(()=>pc.rpc.call('assign',{threadId,lead:agent.id,helpers,systemMode}),'Lead assigned for the next provider session.'))close();}}/>}
@@ -84,7 +84,36 @@ export function ChatExperience({threadId}:Pick<ExperimentalThreadContextSegmentP
  const bar=<ExpBar key={threadId} agents={agents} activity={activity} error={error}/>;
  return <span ref={anchor} className="ppc-exp-anchor">{enabled&&(mount?createPortal(bar,mount):bar)}</span>;
 }
+// New-chat composer: choose who works on the next chat. Single battle picks a lead; double battle
+// adds one partner. The server's message.dispatch hook claims the pick before the session is built.
+type LeadChoice={agent:Agent;mode:SystemMode};
+const leadChoices=(agents:Agent[]):LeadChoice[]=>agents.filter(a=>!a.archived).flatMap(a=>a.systems?systemModes.map(mode=>({agent:a,mode})):[{agent:a,mode:'build' as SystemMode}]);
+const choiceLabel=({agent,mode}:LeadChoice)=>agent.systems?`${agent.name} · ${systems[mode].label}`:agent.name;
+export function AgentPicker() {
+ const composer=useComposer();const {state}=usePC();const p=state?.pending;
+ const lead=state?.agents.find(a=>a.id===p?.lead);const partner=state?.agents.find(a=>a.id===p?.partner);
+ const label=lead?(partner?`${lead.name} + ${partner.name}`:lead.name):'Agent';
+ return <span className="ppc-agent-root" data-bb-plugin="pokemon-pc" data-bb-plugin-root=""><button type="button" className="ppc-agent-pick" aria-haspopup="dialog" title={lead?(partner?`Double battle: ${label}`:`${lead.name} will lead this chat`):'Choose who works on this chat'} onClick={()=>composer.experimental_openPopup('agent-party')}>{lead?<><Sprite id={displayAgent(lead,p?.systemMode).spriteId}/>{partner&&<Sprite id={displayAgent(partner,p?.systemMode).spriteId}/>}</>:<Ball closed/>}<span>{label}</span><span aria-hidden="true">▾</span></button></span>;
+}
+export function AgentPopup() {
+ const composer=useComposer();const pc=usePC();const p=pc.state?.pending;
+ const [double,setDouble]=useState(!!p?.partner);const [lead,setLead]=useState<LeadChoice|null>(null);const [busy,setBusy]=useState(false);
+ const choices=leadChoices(pc.state?.agents??[]);
+ async function save(next:PendingLead|null){setBusy(true);pc.setError('');try{await pc.rpc.call('set_pending',next);await pc.refresh();composer.experimental_closePopup();}catch(e){pc.setError(String(e));}finally{setBusy(false);}}
+ const picking=double&&lead?'partner':'lead';
+ const shown=picking==='partner'?(pc.state?.agents??[]).filter(a=>!a.archived&&a.id!==lead!.agent.id).map(agent=>({agent,mode:lead!.mode})):choices;
+ return <div className="ppc-agent-popup" data-bb-plugin="pokemon-pc" data-bb-plugin-root="">
+  <div className="ppc-agent-modes" role="group" aria-label="Battle format"><button type="button" aria-pressed={!double} onClick={()=>{setDouble(false);setLead(null);}}>Single</button><button type="button" aria-pressed={double} onClick={()=>{setDouble(true);setLead(null);}}>Double battle</button></div>
+  <small>{!double?'CHOOSE WHO LEADS THE NEXT CHAT':picking==='lead'?'1 OF 2 · CHOOSE THE LEAD':`2 OF 2 · CHOOSE ${lead!.agent.name.toUpperCase()}’S PARTNER`}</small>
+  {!choices.length?<p className="ppc-empty">Build your party with + in the sidebar first.</p>:<div className="ppc-agent-grid" role="group" aria-label={picking==='partner'?'Partner':'Lead'}>{shown.map(c=>{const current=picking==='lead'?p?.lead===c.agent.id&&(!c.agent.systems||p.systemMode===c.mode)&&(double?!!p.partner:!p.partner):p?.partner===c.agent.id;return <button key={c.agent.id+':'+c.mode} type="button" disabled={busy} aria-pressed={current} className={'ppc-slot'+(current?' ppc-selected':'')} onClick={()=>double&&picking==='lead'?setLead(c):void save({lead:double?lead!.agent.id:c.agent.id,systemMode:double?lead!.mode:c.mode,partner:double?c.agent.id:null})}><Sprite id={displayAgent(c.agent,c.mode).spriteId}/><strong>{picking==='partner'?c.agent.name:choiceLabel(c)}</strong><small>{c.agent.role}</small></button>;})}</div>}
+  {double&&picking==='lead'&&choices.length<2&&<p className="ppc-footnote">A double battle needs at least two agents in your party.</p>}
+  {double&&<p className="ppc-footnote">Both profiles guide one chat: the lead owns the result and brings in its partner’s expertise. No second agent is started.</p>}
+  <div className="ppc-agent-actions">{picking==='partner'&&<button type="button" disabled={busy} onClick={()=>setLead(null)}>← Change lead</button>}<button type="button" className="ppc-agent-none" disabled={busy} aria-pressed={!p} onClick={()=>void save(null)}><Ball closed/>No agent</button></div>
+  {pc.error&&<p role="alert" className="ppc-error">{pc.error}</p>}
+ </div>;
+}
 export default definePluginApp(app=>{
+ app.composer.customize({id:'lead-pokemon',scopes:['new-thread'],actions:[{id:'agent',component:AgentPicker}],experimental_popups:[{id:'agent-party',label:'Choose who works on this chat',component:AgentPopup}]});
  app.slots.experimental_appOverlay({id:'ppc-sidebar',component:SidebarIntegration});
  app.slots.experimental_threadContextSegment({id:'party-exp',title:'Party activity XP',group:'pokemon-pc',summary:ChatExperience});
  app.slots.experimental_threadAction({id:'lead-pokemon',title:'Lead Pokémon',icon:'User',group:'organize',useData:()=>usePC(),item:({thread,data})=>{

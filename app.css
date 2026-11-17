@@ -63,3 +63,18 @@
 @media(prefers-reduced-motion:reduce){.ppc-walker{animation:none!important}.ppc-exp-fill{transition:none}}
 @media(max-width:600px){.ppc-exp-mount{padding:0 12px 8px}.ppc-pokedex{grid-template-columns:repeat(4,minmax(0,1fr))}.ppc-editor{padding:18px}.ppc-exp-scene{gap:0}.ppc-walker{flex-basis:48px}.ppc-walker .ppc-sprite{width:48px;height:48px}.ppc-exp-scene{height:52px}}
 .ppc-exp{position:relative}.ppc-exp-collapse{position:absolute;right:0;top:2px;z-index:1;width:24px;height:24px;padding:0;border:1px solid #cddae6;border-radius:5px;background:#f7faff;color:#6c87a4;cursor:pointer;font:18px/1 monospace}.ppc-exp-collapse:focus-visible{outline:2px solid #427abf;outline-offset:2px}.ppc-exp-collapsed{padding:7px 30px 7px 0;min-height:26px}.ppc-exp-collapsed .ppc-exp-scene,.ppc-exp-collapsed .ppc-exp-label,.ppc-exp-collapsed .ppc-exp-caption{display:none}.ppc-exp-collapsed .ppc-walker{animation:none!important}.ppc-exp-collapsed .ppc-exp-track{height:7px;padding:1px}.ppc-exp-collapsed .ppc-exp-collapse{top:0}
+/* New-chat composer: Agent picker, Single / Double battle popup, and task owner select. */
+.ppc-agent-root,.ppc-agent-popup{--pc-ink:#405447;--pc-muted:#74836f;color:var(--pc-ink);font-family:ui-sans-serif,system-ui,sans-serif;font-size:12px;box-sizing:border-box}
+.ppc-agent-popup *{box-sizing:border-box}.ppc-agent-popup button{cursor:pointer;font:inherit;color:inherit}.ppc-agent-popup button:disabled{opacity:.45;cursor:default}
+.ppc-agent-pick{display:inline-flex;align-items:center;gap:3px;height:26px;border:1px solid #c6d3b8;border-radius:6px;background:#f8faef;padding:0 7px 0 3px;font:inherit;color:inherit;cursor:pointer;white-space:nowrap}
+.ppc-agent-pick:hover{background:#eaf0df}.ppc-agent-pick:focus-visible,.ppc-agent-popup button:focus-visible{outline:2px solid #647e59;outline-offset:2px}
+.ppc-agent-pick .ppc-sprite{width:24px;height:24px}.ppc-agent-pick .ppc-sprite+.ppc-sprite{margin-left:-8px}.ppc-agent-pick .ppc-ball{width:16px;height:18px}.ppc-agent-pick>span[aria-hidden]{font-size:9px;color:var(--pc-muted)}
+.ppc-agent-popup{padding:8px;background:#f8faef;max-height:420px;overflow:auto}
+.ppc-agent-popup>small{display:block;font:9px ui-monospace,monospace;letter-spacing:.5px;color:#7b8b70;margin:6px 2px}
+.ppc-agent-modes{display:flex;gap:4px}.ppc-agent-modes button{flex:1;border:1px solid #cad7bc;border-radius:5px;background:#f3f6eb;padding:4px 6px;font-size:11px}.ppc-agent-modes button[aria-pressed=true]{background:#e1ebf7;border-color:#769bc9;font-weight:600}
+.ppc-agent-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px}
+.ppc-agent-popup .ppc-slot{padding:2px 1px 4px!important}.ppc-agent-popup .ppc-slot .ppc-sprite{width:48px;height:48px;margin:0}
+.ppc-agent-popup .ppc-footnote{font-size:10px;color:var(--pc-muted);margin:6px 2px}
+.ppc-agent-actions{display:flex;gap:6px;margin-top:5px;border-top:1px solid #e0e6d6;padding-top:4px}.ppc-agent-actions>button{border:1px solid transparent;border-radius:5px;background:none;padding:3px 6px;font-size:11px;color:var(--pc-muted)}
+.ppc-agent-none{display:flex;align-items:center;gap:5px;margin-left:auto}.ppc-agent-none[aria-pressed=true]{border-color:#cad7bc!important;background:#eef2e2!important}.ppc-agent-none .ppc-ball{width:16px;height:18px}
+.ppc-owner{border:0;background:transparent;color:inherit;font:inherit;padding:0;max-width:140px;cursor:pointer}.ppc-owner:disabled{cursor:default}.ppc-owner:focus-visible{outline:2px solid #647e59;outline-offset:1px}

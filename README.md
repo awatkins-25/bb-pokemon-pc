@@ -10,7 +10,7 @@ Requires **BB 0.49+**, **plugin SDK 0.6.132+**, Git, and the separate [Apple Not
 
 ```sh
 bb plugin install git:https://github.com/alanagoyal/apple-notes-bb-theme.git@main
-bb plugin install git:https://github.com/pdaly23442/bb-pokemon-pc.git@v0.1.1
+bb plugin install git:https://github.com/pdaly23442/bb-pokemon-pc.git@v0.2.0
 bb theme set plugin:pokemon-pc:daylight
 ```
 
@@ -26,7 +26,16 @@ Click **+** beside **Your Party**. Search Pokémon by name or Pokédex number, f
 
 Click an agent to edit it or make it the current chat’s lead. Select supporting perspectives in its profile, or use a chat’s **Lead Pokémon** menu. Enable the optional Porygon modes to switch between **Build / Porygon**, **Operate / Porygon2**, and **Repair / Porygon-Z**. Archiving retains the profile and tasks but clears its lead/helper assignments; restore it from **Archived agents**.
 
-Profiles apply when BB next constructs the provider session. Assignment does not restart an active session, create independent workers, install tools, connect accounts, grant permissions, or isolate private data.
+### Choose who works on a new chat
+
+The new-chat composer has an **Agent** button. Open it and choose:
+
+- **Single**: one agent leads the chat.
+- **Double battle**: choose a lead, then one partner. The lead owns the result and brings in its partner's expertise, and both sprites join the chat.
+
+The pick is applied when you send the chat's first message, before BB starts the agent, so the profile is active from the first reply. It then resets to **Agent** for your next chat. Chats started by other agents or automations never use it. For chats already running, assigning a lead or changing perspectives applies only when BB next constructs that chat's provider session.
+
+A double battle is two profiles guiding **one** session. It does not start a second agent. Assignment does not restart an active session, create independent workers, install tools, connect accounts, grant permissions, or isolate private data.
 
 ## Activity EXP
 
@@ -40,7 +49,7 @@ The plugin polls the open chat’s supported event stream every 2.5 seconds. Old
 
 ## To Dos
 
-Use **+** beside **To Dos**, choose work/personal, an optional agent owner, and one of eight ball skins. Personal tasks default to Quick Ball. Click a ball to complete or reopen a task. **Clear finished** archives completed tasks; **Undo** restores the batch. Tasks, profiles, assignments, and XP persist in BB-managed SQLite storage. The sidebar shows up to 200 unarchived tasks.
+Use **+** beside **To Dos**, choose work/personal, the agent that should work on it, and one of eight ball skins. Change a task's agent at any time from the menu under its title. Personal tasks default to Quick Ball. Click a ball to complete or reopen a task. **Clear finished** archives completed tasks; **Undo** restores the batch. Tasks, profiles, assignments, and XP persist in BB-managed SQLite storage. The sidebar shows up to 200 unarchived tasks.
 
 `bb pokemon-pc list --json` returns saved profiles, tasks, and assignments. See [the bundled skill](skills/pokemon-pc/SKILL.md) for evidence-based task completion and assignment commands.
 

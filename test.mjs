@@ -1,4 +1,4 @@
-import { experimental_scanPublicSdkOnly, createFakePluginHost, makeThreadResponse } from '@get-bb/plugin-sdk/testing';
+import { experimental_scanPublicSdkOnly, createFakePluginHost, makeThreadResponse, makeMessageDispatchHookContext } from '@get-bb/plugin-sdk/testing';
 import { build } from 'esbuild';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -24,12 +24,14 @@ assert.throws(()=>store.updateAgent(lead.id,lead.revision,fields),/changed elsew
 const a=store.add({title:'Synthetic personal task',category:'personal',sourceKey:'synthetic:1'});assert.equal(a.skin,'quick');assert.equal(a.owner,null);assert.equal(store.add({title:'Duplicate',sourceKey:'synthetic:1'}).id,a.id);
 assert.throws(()=>store.add({title:' '}));assert.throws(()=>store.add({title:'x',skin:'invalid'}));assert.throws(()=>store.add({title:'x',owner:'missing'}));
 const b=store.add({title:'Review demo',skin:'master',owner:lead.id});const done=store.done(a.id,true,a.revision);assert.equal(done.completedBy,'user');assert.throws(()=>store.done(a.id,false,a.revision),/changed elsewhere/);
+const owned=store.setOwner(b.id,helper.id,b.revision);assert.equal(owned.owner,helper.id);assert.throws(()=>store.setOwner(b.id,null,b.revision),/changed elsewhere/);assert.throws(()=>store.setOwner(b.id,'missing',owned.revision));const reowned=store.setOwner(b.id,lead.id,owned.revision);assert.equal(reowned.owner,lead.id);
 const {token,count}=store.clear();assert.equal(count,1);assert.equal(store.state().tasks.length,1);assert.equal(store.state().tasks[0].id,b.id);assert.throws(()=>store.done(a.id,false,done.revision+1),/Restore/);
 store.restore(token);assert.equal(store.state().tasks.length,2);assert.equal(store.restore(token).count,0);
 const fresh=store.get(a.id);store.done(a.id,false,fresh.revision);assert.equal(store.get(a.id).completedBy,null);
 store.assign({threadId:'synthetic-chat',lead:lead.id,helpers:[lead.id,helper.id,helper.id]});assert.deepEqual(store.assignment('synthetic-chat').helpers,[helper.id]);assert.throws(()=>store.assign({threadId:'x',lead:'missing',helpers:[]}));
 store.assign({threadId:'synthetic-chat',lead:lead.id,helpers:[helper.id],systemMode:'repair'});assert.throws(()=>store.assign({threadId:'x',lead:lead.id,helpers:[],systemMode:'unknown'}));
-const archivedHelper=store.archiveAgent(helper.id,0,true);assert.deepEqual(store.assignment('synthetic-chat').helpers,[]);assert.throws(()=>store.assign({threadId:'x',lead:helper.id,helpers:[]}),/Restore/);store.archiveAgent(helper.id,archivedHelper.revision,false);
+assert.throws(()=>store.setPending({lead:lead.id,partner:lead.id}),/different partner/);store.setPending({lead:lead.id,partner:helper.id});
+const archivedHelper=store.archiveAgent(helper.id,0,true);assert.deepEqual(store.assignment('synthetic-chat').helpers,[]);assert.equal(store.pending(),null);assert.throws(()=>store.setPending({lead:helper.id}),/Restore/);assert.throws(()=>store.assign({threadId:'x',lead:helper.id,helpers:[]}),/Restore/);store.archiveAgent(helper.id,archivedHelper.revision,false);
 const start={seq:1,type:'turn/started',data:{}};
 const work=seq=>({seq,type:'item/completed',data:{item:{id:`item-${seq}`,type:'commandExecution',status:'completed',exitCode:0}}});
 let xp=reduceActivity(emptyActivity(),[start,work(2),work(3)]);assert.equal(xp.xp,24);assert.equal(xp.actions,2);assert.equal(xp.active,true);
@@ -49,7 +51,7 @@ assert.ok(!JSON.stringify(plans).includes('First'));
 const cap=reduceActivity(emptyActivity(),Array.from({length:30},(_,i)=>work(i+1)));assert.equal(cap.xp,90);assert.equal(cap.level,1);
 store.applyActivity('synthetic-chat',[start,work(2)]);store.applyActivity('synthetic-chat',[start,work(2)]);assert.equal(store.activityState('synthetic-chat').actions,1);
 db.close();db=new Database(filename);store=createStore(db);assert.equal(store.assignment('synthetic-chat').systemMode,'repair');assert.equal(store.state().tasks.length,2);assert.equal(store.agents().length,7);assert.equal(store.getAgent(lead.id).mission,'Build and verify a demo');assert.equal(store.activityState('synthetic-chat').xp,12);
-store.archiveAgent(lead.id,updated.revision,true);assert.equal(store.assignment('synthetic-chat'),null);assert.equal(store.get(b.id).owner,lead.id);assert.equal(store.state().tasks.length,2);assert.equal(db.prepare('SELECT count(*) AS n FROM audit').get().n,6);
+store.archiveAgent(lead.id,updated.revision,true);assert.equal(store.assignment('synthetic-chat'),null);assert.equal(store.get(b.id).owner,lead.id);assert.equal(store.state().tasks.length,2);assert.equal(db.prepare('SELECT count(*) AS n FROM audit').get().n,8);
 db.close();rmSync(dir,{recursive:true});
 console.log('PASS: native SQLite persistence, additive migration, empty/custom 7-agent roster, CAS, archive/restore, tasks/audit, idempotent XP and level boundaries.');
 const scan=await experimental_scanPublicSdkOnly(process.cwd(),{allow:[/^(react|react-dom)(\/.*)?$/, /^(esbuild|better-sqlite3|jsdom)$/, /^@testing-library\//, /^@playwright\//, /^@get-bb\/plugin-sdk\/testing(\/app)?$/]});
@@ -71,5 +73,22 @@ assert.equal((await harness.behavior.callRpc('activity',{threadId:'synthetic-cha
 assert.equal((await harness.behavior.callRpc('activity',{threadId:'synthetic-chat'})).xp,12);
 assert.equal((await harness.behavior.callRpc('activity',{threadId:'synthetic-chat'})).active,false);
 runtimeStatus='active';assert.equal((await harness.behavior.callRpc('activity',{threadId:'synthetic-chat'})).active,true);
+// New-chat picker: a human's first message to a pending thread claims the pick once, single or double battle.
+const partner=await harness.behavior.callRpc('create_agent',{...fields,name:'Partner',spriteId:25,systems:false});
+const dispatch=harness.registrations.hooks['message.dispatch'];
+const first=over=>makeMessageDispatchHookContext({thread:{id:'new-chat',status:'pending'},attempt:'start-turn',initiator:'user',senderThreadId:null,...over});
+assert.equal((await harness.behavior.callRpc('state',null)).pending,null);
+await harness.behavior.callRpc('set_pending',{lead:agent.id,systemMode:'repair',partner:partner.id});
+for(const skip of [{senderThreadId:'parent-chat'},{initiator:'agent'},{initiator:'system'},{thread:{id:'new-chat',status:'idle'}},{attempt:'join-turn'}])assert.deepEqual(await dispatch(first(skip)),{action:'proceed'});
+assert.equal((await harness.behavior.callRpc('state',null)).assignments.some(a=>a.threadId==='new-chat'),false);
+assert.deepEqual(await dispatch(first({})),{action:'proceed'});
+let picked=await harness.behavior.callRpc('state',null);assert.equal(picked.pending,null);assert.deepEqual(picked.assignments.find(a=>a.threadId==='new-chat'),{threadId:'new-chat',lead:agent.id,helpers:[partner.id],systemMode:'repair'});
+const pairInstructions=harness.registrations.instructionProvider({threadId:'new-chat',projectId:'synthetic-project'});assert.ok(pairInstructions.includes('Double battle: Builder leads and Partner partners'));assert.ok(pairInstructions.includes('Porygon-Z'));
+await harness.behavior.callRpc('set_pending',{lead:partner.id});await dispatch(first({}));assert.equal((await harness.behavior.callRpc('state',null)).assignments.find(a=>a.threadId==='new-chat').lead,agent.id,'never overrides an existing assignment');
+await dispatch(first({thread:{id:'single-chat',status:'pending'}}));const single=harness.registrations.instructionProvider({threadId:'single-chat',projectId:'synthetic-project'});assert.ok(single.includes('lead Partner'));assert.ok(!single.includes('Double battle'));
+assert.equal(await harness.behavior.callRpc('set_pending',null),null);await dispatch(first({thread:{id:'plain-chat',status:'pending'}}));assert.equal(harness.registrations.instructionProvider({threadId:'plain-chat',projectId:'synthetic-project'}),null);
+// Choosing the agent that works on a task, from the UI RPC and the CLI.
+const ownedTask=await harness.behavior.callRpc('set_owner',{id:task.id,owner:partner.id,revision:(await harness.behavior.callRpc('state',null)).tasks.find(t=>t.id===task.id).revision});assert.equal(ownedTask.owner,partner.id);
+assert.equal((await harness.behavior.runCli(['owner',task.id,'none'])).exitCode,0);assert.equal((await harness.behavior.callRpc('state',null)).tasks.find(t=>t.id===task.id).owner,null);assert.equal((await harness.behavior.runCli(['owner',task.id,'missing'])).exitCode,1);
 await harness.lifecycle.dispose();
-console.log('PASS: public SDK scan, RPC validation, CLI evidence, custom instructions, modes, activity RPC.');
+console.log('PASS: public SDK scan, RPC validation, CLI evidence, custom instructions, modes, activity RPC, new-chat single/double battle picker, task owners.');

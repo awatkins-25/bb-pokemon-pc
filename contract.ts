@@ -13,6 +13,9 @@ export const agent = agentFields.extend({id:role,revision:z.number().int(),archi
 export const task = z.object({id:z.string(),title:z.string(),category:z.enum(['work','personal']),skin:z.enum(skins),owner:role.nullable(),done:z.boolean(),archived:z.boolean(),revision:z.number(),createdAt:z.string(),completedAt:z.string().nullable(),completedBy:z.string().nullable(),evidence:z.string().nullable()});
 export const assignment = z.object({threadId:z.string().min(1).max(200),lead:role,helpers:z.array(role).max(99),systemMode:systemMode.default('build')});
 export const activity = z.object({level:z.number(),xp:z.number(),actions:z.number(),active:z.boolean(),lastSeq:z.number(),completedSteps:z.number(),hasPlan:z.boolean(),lastKind:z.string(),catchingUp:z.boolean()});
+// The new-chat composer's pick: one lead (single) or a lead plus one partner (double battle).
+export const pendingLead = z.object({lead:role,systemMode:systemMode.default('build'),partner:role.nullable().default(null)});
+export type PendingLead = z.infer<typeof pendingLead>;
 export type Agent = z.infer<typeof agent>;
 export type AgentFields = z.infer<typeof agentFields>;
 export type Activity = z.infer<typeof activity>;
@@ -21,7 +24,7 @@ export type Assignment = z.infer<typeof assignment>;
 export type Role = z.infer<typeof role>;
 export type Skin = typeof skins[number];
 export const addInput = z.object({title:z.string().trim().min(1).max(240),category:z.enum(['work','personal']).default('work'),skin:z.enum(skins).optional(),owner:role.nullable().optional(),sourceKey:z.string().min(1).max(300).optional()}).strict();
-export const stateSchema=z.object({agents:z.array(agent),tasks:z.array(task),assignments:z.array(assignment),openCount:z.number(),total:z.number()});
+export const stateSchema=z.object({agents:z.array(agent),tasks:z.array(task),assignments:z.array(assignment),pending:pendingLead.nullable(),openCount:z.number(),total:z.number()});
 export type PCState=z.infer<typeof stateSchema>;
 export const rpcContract = defineRpcContract({
  state:{input:z.null(),output:stateSchema},
@@ -31,8 +34,10 @@ export const rpcContract = defineRpcContract({
  activity:{input:z.object({threadId:z.string().min(1).max(200)}).strict(),output:activity},
  add:{input:addInput,output:task},
  set_done:{input:z.object({id:z.string(),done:z.boolean(),revision:z.number().int()}).strict(),output:task},
+ set_owner:{input:z.object({id:z.string(),owner:role.nullable(),revision:z.number().int()}).strict(),output:task},
  clear:{input:z.null(),output:z.object({token:z.string(),count:z.number()})},
  restore:{input:z.object({token:z.string()}).strict(),output:z.object({count:z.number()})},
  assign:{input:assignment.strict(),output:assignment},
- unassign:{input:z.object({threadId:z.string()}).strict(),output:z.object({ok:z.boolean()})}
+ unassign:{input:z.object({threadId:z.string()}).strict(),output:z.object({ok:z.boolean()})},
+ set_pending:{input:pendingLead.strict().nullable(),output:pendingLead.nullable()}
 });
