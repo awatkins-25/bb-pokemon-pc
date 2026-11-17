@@ -1,6 +1,6 @@
 # Pokémon PC for BB
 
-Build your own Pokémon party of agents, keep tasks in Poké Balls, and watch your team earn EXP as it works. A fresh install starts with an **empty party**. Pick any of the **493 Pokémon from Generations I–IV**, give each a role and instructions, and assemble six agents—or more.
+Build your own Pokémon party of agents, keep tasks in Poké Balls, and watch your team earn EXP as it works. A fresh install starts with an **empty party**. Pick any of the **493 Pokémon from Generations I–IV**, give each a role and instructions, and assemble a team of agents.
 
 ![Synthetic example party and activity EXP bar](docs/party-preview.png)
 
