@@ -1,0 +1,12 @@
+node_modules/
+.testbuild/
+.env
+.env.*
+*.db
+*.db-*
+.DS_Store
+dist/
+.preview/
+test-results/
+playwright-report/
+*.log
