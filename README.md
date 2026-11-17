@@ -10,7 +10,7 @@ Requires **BB 0.49+**, **plugin SDK 0.6.132+**, Git, and the separate [Apple Not
 
 ```sh
 bb plugin install git:https://github.com/alanagoyal/apple-notes-bb-theme.git@main
-bb plugin install git:https://github.com/pdaly23442/bb-pokemon-pc.git@v0.2.0
+bb plugin install git:https://github.com/pdaly23442/bb-pokemon-pc.git@v0.2.1
 bb theme set plugin:pokemon-pc:daylight
 ```
 
@@ -72,6 +72,15 @@ python3 -m http.server 8080 --bind 127.0.0.1 --directory .preview
 ```
 
 The preview uses the real UI components with **synthetic data** and never connects to BB. Its work-event controls are only demo fixtures. For automated visual checks: `npx playwright install chromium`, then `npm run test:browser`. Screenshots in this repository come only from that preview. See [validation](docs/validation.md).
+
+## Security
+
+Profile instructions are added to every chat that the profile leads, so treat them like any other agent instruction file. Other plugins cannot create, edit, archive, or assign profiles. BB gives local agents the same access as you, though: an agent running a shell can still reach the plugin or its database. The plugin limits the damage in two ways:
+
+- **Agents get a warning label on profile text.** Injected profiles carry a notice that they're stored configuration, not messages from you. They can't authorize actions, and agents must report any requests to send data, contact people, or change settings instead of acting on them.
+- **The bundled skill restricts agents.** It tells agents never to edit profiles or call the plugin's RPC directly. Agents must also treat To Do titles and evidence as data, and summarize tasks from email or chat in their own words.
+
+If a profile's instructions look different from what you wrote, edit or archive it from the PC.
 
 ## Limits and rollback
 
