@@ -6,11 +6,11 @@ Build your own Pokémon party of agents, keep tasks in Poké Balls, and watch yo
 
 ## Install
 
-Requires **BB 0.49+**, **plugin SDK 0.6.132+**, Git, and the separate [Apple Notes plugin](https://github.com/alanagoyal/apple-notes-bb-theme). BB installs dependencies and builds Git plugins automatically.
+Requires **BB 0.49+**, **plugin SDK 0.6.132+**, Git, and the separate [Apple Notes plugin](https://github.com/pdaly23442/bb-apple-notes-theme), installed pinned to a reviewed commit. BB installs dependencies and builds Git plugins automatically.
 
 ```sh
-bb plugin install git:https://github.com/alanagoyal/apple-notes-bb-theme.git@main
-bb plugin install git:https://github.com/pdaly23442/bb-pokemon-pc.git@v0.2.1
+bb plugin install git:https://github.com/pdaly23442/bb-apple-notes-theme.git@5298b3abed7a1ba7b2c46fc9979194893cbf76dd
+bb plugin install git:https://github.com/pdaly23442/bb-pokemon-pc.git@v0.2.2
 bb theme set plugin:pokemon-pc:daylight
 ```
 

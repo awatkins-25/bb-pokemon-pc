@@ -14,4 +14,4 @@ Create profiles in the party, then choose a chat’s lead and supporting perspec
 
 ## Requirements and limits
 
-Requires BB 0.49+, SDK 0.6.132+, and the separate [Apple Notes plugin](https://github.com/alanagoyal/apple-notes-bb-theme). Uncached artwork needs internet access to [PokeAPI sprites](https://github.com/PokeAPI/sprites). No external account or paid service is required for the theme itself. Profiles do not install tools, grant account access, isolate private data, or launch separate workers. This project is unaffiliated with Pokémon’s rights holders.
+Requires BB 0.49+, SDK 0.6.132+, and the separate [Apple Notes plugin](https://github.com/pdaly23442/bb-apple-notes-theme), pinned to commit `5298b3a`. Uncached artwork needs internet access to [PokeAPI sprites](https://github.com/PokeAPI/sprites). No external account or paid service is required for the theme itself. Profiles do not install tools, grant account access, isolate private data, or launch separate workers. This project is unaffiliated with Pokémon’s rights holders.
