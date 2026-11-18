@@ -1,48 +1,48 @@
-/* Pokémon PC — Pink. Derived from the Cobalt theme (Apple Notes for BB).
+/* Pokémon PC — Sky (light blue). Derived from the Cobalt theme (Apple Notes for BB).
    Token overrides follow BB updates; the small cosmetic selector section
    safely stops matching if future markup changes. No layout/behavior overrides. */
 :root,
 .light,
 .dark {
   color-scheme: light;
-  --canvas: #fffdfe;
-  --ink: #3b2a33;
-  --primary: #c9437f;
+  --canvas: #fdfeff;
+  --ink: #2a343b;
+  --primary: #2a76ad;
   --primary-foreground: #ffffff;
-  --sidebar: #fff6fa;
-  --sidebar-foreground: #3b2a33;
-  --sidebar-accent: #fde9f1;
-  --sidebar-accent-foreground: #3b2a33;
-  --sidebar-border: #f8dbe7;
-  --surface-scrim: #fffafcf2;
-  --border: #f6e1ea;
-  --border-hairline: #f9e8ef;
-  --border-seam: #f5dce6;
-  --input: #f0cddb;
-  --secondary: #fff3f8;
-  --accent: #fdf0f5;
-  --muted: #fcebf2;
-  --muted-foreground: #85606f;
-  --subtle-foreground: #87616f;
-  --readback-foreground: #85606f;
-  --surface-selected: #fde3ee;
-  --surface-selected-border: #f7c3d8;
-  --notes-selected-foreground: #3b2a33;
-  --notes-button: #f6b3cf;
-  --notes-button-foreground: #4a1a30;
-  --ring: #ec8fb7;
-  --sidebar-ring: #ec8fb7;
+  --sidebar: #f6fbff;
+  --sidebar-foreground: #2a343b;
+  --sidebar-accent: #e9f5fd;
+  --sidebar-accent-foreground: #2a343b;
+  --sidebar-border: #dbecf8;
+  --surface-scrim: #fafdfff2;
+  --border: #e1edf6;
+  --border-hairline: #e8f2f9;
+  --border-seam: #dcebf5;
+  --input: #cde1f0;
+  --secondary: #f3faff;
+  --accent: #f0f8fd;
+  --muted: #ebf5fc;
+  --muted-foreground: #607685;
+  --subtle-foreground: #617787;
+  --readback-foreground: #607685;
+  --surface-selected: #e3f2fd;
+  --surface-selected-border: #c3e1f7;
+  --notes-selected-foreground: #2a343b;
+  --notes-button: #b3daf6;
+  --notes-button-foreground: #1a364a;
+  --ring: #8fc5ec;
+  --sidebar-ring: #8fc5ec;
   --destructive: #d43229;
   --destructive-foreground: #ffffff;
   --destructive-text: #bc2921;
   --warning: #b97800;
   --warning-text: #8c6000;
-  --attention: #e0679d;
+  --attention: #67aee0;
   --success: #267b43;
   --diff-added: #267b43;
   --diff-removed: #bc2921;
   --pr-merged: #8251ac;
-  --file-accent: #c9437f;
+  --file-accent: #2a76ad;
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", system-ui, sans-serif;
   --font-mono: "SF Mono", Menlo, Consolas, monospace;
   --font-terminal: "SF Mono", Menlo, Consolas, monospace;
@@ -141,7 +141,7 @@ form[data-promptbox] button[type="submit"] {
 :root:not(.apple-notes-layout-disabled) .an-heading-anchor { display:none; }
 :root:not(.apple-notes-layout-disabled) .an-document-heading { padding:0 0 26px; }
 :root:not(.apple-notes-layout-disabled) .an-document-heading time { display:block; text-align:center; font-size:12px; color:var(--muted-foreground); margin:0 0 20px; }
-:root:not(.apple-notes-layout-disabled) { --notes-link:#c9437f; }
+:root:not(.apple-notes-layout-disabled) { --notes-link:#2a76ad; }
 :root:not(.apple-notes-layout-disabled) [data-message-column] [data-markdown-preview] a {
   color:var(--notes-link); text-decoration:underline; text-underline-offset:2px;
 }
@@ -488,7 +488,7 @@ form[data-promptbox] button[type="submit"] {
 :root:not(.apple-notes-layout-disabled) [data-sidebar-rename-row]:focus-within > .an-note-meta { right:76px; }
 :root:not(.apple-notes-layout-disabled) [data-sidebar-thread-trailing] [aria-label="Unread thread succeeded"] {
   width:9px; height:9px; min-width:9px; min-height:9px;
-  background:#f48fb1; color:#f48fb1; border-radius:50%; opacity:1;
+  background:#8fcaf4; color:#8fcaf4; border-radius:50%; opacity:1;
 }
 
 /* Keep unread dots off the selected highlight without shifting row actions. */
@@ -765,13 +765,13 @@ form[data-promptbox] button[type="submit"] {
 
 :root { --pokemon-pc-enabled: 1; }
 
-/* Pink overrides for the party, task boxes and EXP bar. */
-.ppc-boxes,.ppc-dialog,.ppc-agent-root,.ppc-agent-popup{--pc-ink:#4a2a3a;--pc-muted:#8a5f73;--pc-border:#f6d3e2;--pc-paper:#fffafc}
-.ppc-box{box-shadow:inset 0 0 0 3px #fef0f6,0 2px 0 #f9e0ea}
-.ppc-exp{color:#8a4f6a}
-.ppc-exp-scene{border-bottom-color:#f8e1ea;background:linear-gradient(0deg,#fef3f8,transparent 65%)}
-.ppc-exp-label strong{color:#c9437f}
-.ppc-exp-label strong span,.ppc-exp-label button{color:#a0607d}
-.ppc-exp-track{border-color:#e6a9c3;background:#fdeef4;box-shadow:inset 0 1px 1px #a0607d33}
-.ppc-exp-fill{background:linear-gradient(#fcd0e2 0 45%,#f29ac0 45%)}
-.ppc-exp-caption,.ppc-exp-invite{color:#a07a8b}
+/* Light blue overrides for the party, task boxes and EXP bar. */
+.ppc-boxes,.ppc-dialog,.ppc-agent-root,.ppc-agent-popup{--pc-ink:#2a3d4a;--pc-muted:#5f788a;--pc-border:#d3e7f6;--pc-paper:#fafdff}
+.ppc-box{box-shadow:inset 0 0 0 3px #f0f8fe,0 2px 0 #e0eff9}
+.ppc-exp{color:#4f718a}
+.ppc-exp-scene{border-bottom-color:#e1eef8;background:linear-gradient(0deg,#f3f9fe,transparent 65%)}
+.ppc-exp-label strong{color:#2a76ad}
+.ppc-exp-label strong span,.ppc-exp-label button{color:#6085a0}
+.ppc-exp-track{border-color:#a9cde6;background:#eef7fd;box-shadow:inset 0 1px 1px #6085a033}
+.ppc-exp-fill{background:linear-gradient(#d0eafc 0 45%,#9acdf2 45%)}
+.ppc-exp-caption,.ppc-exp-invite{color:#7a90a0}

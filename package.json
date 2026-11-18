@@ -27,10 +27,10 @@
         }
       },
       {
-        "id": "pink",
-        "name": "Pokémon PC — Pink",
-        "description": "Light-only soft pink sidebar, accents, party boxes and EXP bar for the Apple Notes layout.",
-        "css": "./themes/pink.css",
+        "id": "sky",
+        "name": "Pokémon PC — Sky",
+        "description": "Light-only soft light blue sidebar, accents, party boxes and EXP bar for the Apple Notes layout.",
+        "css": "./themes/sky.css",
         "codeTheme": {
           "light": "github-light",
           "dark": "github-light"
