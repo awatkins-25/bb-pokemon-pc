@@ -3,44 +3,44 @@
    safely stops matching if future markup changes. No layout/behavior overrides. */
 :root,
 .light {
-  --canvas: #fffafc;
+  --canvas: #fffdfe;
   --ink: #3b2a33;
-  --primary: #c2185b;
+  --primary: #c9437f;
   --primary-foreground: #ffffff;
-  --sidebar: #fdeef4;
+  --sidebar: #fff6fa;
   --sidebar-foreground: #3b2a33;
-  --sidebar-accent: #f9dbe7;
+  --sidebar-accent: #fde9f1;
   --sidebar-accent-foreground: #3b2a33;
-  --sidebar-border: #f0c6d6;
-  --surface-scrim: #fff5f9f2;
-  --border: #f0d3df;
-  --border-hairline: #f5dde7;
-  --border-seam: #eecbd9;
-  --input: #e8bfd0;
-  --secondary: #fcedf3;
-  --accent: #fbe6ee;
-  --muted: #f8e1ea;
+  --sidebar-border: #f8dbe7;
+  --surface-scrim: #fffafcf2;
+  --border: #f6e1ea;
+  --border-hairline: #f9e8ef;
+  --border-seam: #f5dce6;
+  --input: #f0cddb;
+  --secondary: #fff3f8;
+  --accent: #fdf0f5;
+  --muted: #fcebf2;
   --muted-foreground: #85606f;
   --subtle-foreground: #87616f;
   --readback-foreground: #85606f;
-  --surface-selected: #fbd3e3;
-  --surface-selected-border: #f2a7c4;
+  --surface-selected: #fde3ee;
+  --surface-selected-border: #f7c3d8;
   --notes-selected-foreground: #3b2a33;
-  --notes-button: #d63384;
-  --notes-button-foreground: #ffffff;
-  --ring: #d63384;
-  --sidebar-ring: #d63384;
+  --notes-button: #f6b3cf;
+  --notes-button-foreground: #4a1a30;
+  --ring: #ec8fb7;
+  --sidebar-ring: #ec8fb7;
   --destructive: #d43229;
   --destructive-foreground: #ffffff;
   --destructive-text: #bc2921;
   --warning: #b97800;
   --warning-text: #8c6000;
-  --attention: #d63384;
+  --attention: #e0679d;
   --success: #267b43;
   --diff-added: #267b43;
   --diff-removed: #bc2921;
   --pr-merged: #8251ac;
-  --file-accent: #c2185b;
+  --file-accent: #c9437f;
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", system-ui, sans-serif;
   --font-mono: "SF Mono", Menlo, Consolas, monospace;
   --font-terminal: "SF Mono", Menlo, Consolas, monospace;
@@ -179,7 +179,7 @@ form[data-promptbox] button[type="submit"] {
 :root:not(.apple-notes-layout-disabled) .an-heading-anchor { display:none; }
 :root:not(.apple-notes-layout-disabled) .an-document-heading { padding:0 0 26px; }
 :root:not(.apple-notes-layout-disabled) .an-document-heading time { display:block; text-align:center; font-size:12px; color:var(--muted-foreground); margin:0 0 20px; }
-:root:not(.apple-notes-layout-disabled) { --notes-link:#c2185b; }
+:root:not(.apple-notes-layout-disabled) { --notes-link:#c9437f; }
 :root:not(.apple-notes-layout-disabled).dark { --notes-link:#f48fb1; }
 :root:not(.apple-notes-layout-disabled) [data-message-column] [data-markdown-preview] a {
   color:var(--notes-link); text-decoration:underline; text-underline-offset:2px;
@@ -806,14 +806,14 @@ form[data-promptbox] button[type="submit"] {
 :root { --pokemon-pc-enabled: 1; }
 
 /* Pink overrides for the party, task boxes and EXP bar. */
-.ppc-boxes,.ppc-dialog,.ppc-agent-root,.ppc-agent-popup{--pc-ink:#4a2a3a;--pc-muted:#8a5f73;--pc-border:#efbcd2;--pc-paper:#fff5f9}
-.ppc-box{box-shadow:inset 0 0 0 3px #fde4ee,0 2px 0 #f5d0df}
+.ppc-boxes,.ppc-dialog,.ppc-agent-root,.ppc-agent-popup{--pc-ink:#4a2a3a;--pc-muted:#8a5f73;--pc-border:#f6d3e2;--pc-paper:#fffafc}
+.ppc-box{box-shadow:inset 0 0 0 3px #fef0f6,0 2px 0 #f9e0ea}
 .ppc-exp{color:#8a4f6a}
-.ppc-exp-scene{border-bottom-color:#f3cfdd;background:linear-gradient(0deg,#fdeaf2,transparent 65%)}
-.ppc-exp-label strong{color:#c2185b}
+.ppc-exp-scene{border-bottom-color:#f8e1ea;background:linear-gradient(0deg,#fef3f8,transparent 65%)}
+.ppc-exp-label strong{color:#c9437f}
 .ppc-exp-label strong span,.ppc-exp-label button{color:#a0607d}
-.ppc-exp-track{border-color:#c77a9b;background:#fbe1ec;box-shadow:inset 0 1px 1px #a0607d33}
-.ppc-exp-fill{background:linear-gradient(#f8a8c8 0 45%,#e05595 45%)}
+.ppc-exp-track{border-color:#e6a9c3;background:#fdeef4;box-shadow:inset 0 1px 1px #a0607d33}
+.ppc-exp-fill{background:linear-gradient(#fcd0e2 0 45%,#f29ac0 45%)}
 .ppc-exp-caption,.ppc-exp-invite{color:#a07a8b}
 .dark .ppc-exp-mount{background:var(--canvas)}
 .dark .ppc-exp-scene{border-bottom-color:#4d3842;background:linear-gradient(0deg,#3a2430,transparent 65%)}
