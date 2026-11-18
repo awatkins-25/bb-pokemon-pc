@@ -25,6 +25,16 @@
           "light": "github-light",
           "dark": "github-dark"
         }
+      },
+      {
+        "id": "pink",
+        "name": "Pokémon PC — Pink",
+        "description": "Soft pink sidebar, accents, party boxes and EXP bar for the Apple Notes layout.",
+        "css": "./themes/pink.css",
+        "codeTheme": {
+          "light": "github-light",
+          "dark": "github-dark"
+        }
       }
     ]
   },
