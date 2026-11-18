@@ -17,7 +17,7 @@ const rpc=Object.fromEntries(['state','create_agent','update_agent','archive_age
 const boxes=renderSlot({component:appModule.Boxes},{},{rpc,context:{threadId:'synthetic-chat',projectId:'synthetic-project'}});
 await screen.findByText('Your adventure starts here.');fireEvent.click(screen.getByRole('button',{name:/Build your first agent/}));
 await screen.findByRole('heading',{name:'Build an agent'});
-fireEvent.change(screen.getByLabelText('Search Pokémon'),{target:{value:'Arceus'}});fireEvent.click(screen.getByRole('button',{name:'Choose Arceus'}));
+fireEvent.change(screen.getByLabelText('Search pets'),{target:{value:'Panda'}});fireEvent.click(screen.getByRole('button',{name:'Choose Panda'}));
 fireEvent.change(screen.getByLabelText('Agent name'),{target:{value:'Demo Scout'}});fireEvent.change(screen.getByLabelText('Role',{exact:true}),{target:{value:'Research'}});fireEvent.change(screen.getByLabelText('Mission'),{target:{value:'Explore a synthetic example'}});fireEvent.change(screen.getByLabelText('Instructions & scaffolding'),{target:{value:'Use synthetic fixtures and verify findings.'}});fireEvent.click(screen.getByRole('button',{name:'Save agent'}));
 await screen.findByRole('button',{name:'Demo Scout: Research'});fireEvent.click(screen.getByRole('button',{name:'Demo Scout: Research'}));fireEvent.click(await screen.findByRole('button',{name:'Make Demo Scout this chat’s lead'}));
 await waitFor(async()=>assert.equal((await rpc.state()).assignments.length,1));

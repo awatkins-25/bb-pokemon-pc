@@ -8,8 +8,8 @@
     "node": ">=22"
   },
   "bb": {
-    "name": "Pokémon PC",
-    "description": "Build a custom Pokémon agent party with persistent Poké Ball tasks and an animated, collapsible activity EXP bar.",
+    "name": "Pet PC",
+    "description": "Build a party of pixel-pet agents with persistent tasks and an animated, collapsible activity EXP bar.",
     "branding": {
       "icon": "ListTodo"
     },
@@ -18,7 +18,7 @@
     "themes": [
       {
         "id": "daylight",
-        "name": "Pokémon PC — Cobalt",
+        "name": "Pet PC — Cobalt",
         "description": "A light PC sidebar and soft cobalt accents for the Apple Notes layout.",
         "css": "./themes/daylight.css",
         "codeTheme": {
@@ -28,7 +28,7 @@
       },
       {
         "id": "sky",
-        "name": "Pokémon PC — Sky",
+        "name": "Pet PC — Sky",
         "description": "Light-only soft light blue sidebar, accents, party boxes and EXP bar for the Apple Notes layout.",
         "css": "./themes/sky.css",
         "codeTheme": {

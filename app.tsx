@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { definePluginApp, useRpc, useRealtime, useRealtimeConnectionState, useBbContext, useComposer, type ExperimentalThreadContextSegmentProps } from '@get-bb/plugin-sdk/app';
 import { type rpcContract, type PCState, type Activity, type Agent, type PendingLead } from './contract';
 import { ballSvg } from './balls';
-import { spriteUrl } from './pokedex';
+import { spriteUrl } from './pets';
 import { systems, systemModes, type SystemMode } from './systems';
 import { AgentEditor, Party, Profile, Tasks, ExpBar, Sprite, Ball, displayAgent } from './components';
 import './app.css';
@@ -116,10 +116,10 @@ export default definePluginApp(app=>{
  app.composer.customize({id:'lead-pokemon',scopes:['new-thread'],actions:[{id:'agent',component:AgentPicker}],experimental_popups:[{id:'agent-party',label:'Choose who works on this chat',component:AgentPopup}]});
  app.slots.experimental_appOverlay({id:'ppc-sidebar',component:SidebarIntegration});
  app.slots.experimental_threadContextSegment({id:'party-exp',title:'Party activity XP',group:'pokemon-pc',summary:ChatExperience});
- app.slots.experimental_threadAction({id:'lead-pokemon',title:'Lead Pokémon',icon:'User',group:'organize',useData:()=>usePC(),item:({thread,data})=>{
+ app.slots.experimental_threadAction({id:'lead-pokemon',title:'Lead pet',icon:'User',group:'organize',useData:()=>usePC(),item:({thread,data})=>{
   const current=data.state?.assignments.find(a=>a.threadId===thread.id);const roster=data.state?.agents.filter(a=>!a.archived)??[];
   const choices=roster.flatMap(a=>a.systems?systemModes.map(mode=>({id:a.id+':'+mode,label:`${a.name} · ${systems[mode].label}`,selected:current?.lead===a.id&&current.systemMode===mode})):[{id:a.id,label:`${a.name} · ${a.role}`,selected:current?.lead===a.id}]);
-  return {label:'Lead Pokémon',icon:'User',detail:roster.find(a=>a.id===current?.lead)?.name??'Unassigned',choices:{items:[...choices,{id:'none',label:'Unassigned / Poké Ball'}]},run:async({value})=>{
+  return {label:'Lead pet',icon:'User',detail:roster.find(a=>a.id===current?.lead)?.name??'Unassigned',choices:{items:[...choices,{id:'none',label:'Unassigned'}]},run:async({value})=>{
    if(value==='none')await data.rpc.call('unassign',{threadId:thread.id});
    else {const [lead,rawMode]=String(value).split(':');if(roster.some(a=>a.id===lead)){const mode=systemModes.includes(rawMode as SystemMode)?rawMode as SystemMode:current?.systemMode??'build';await data.rpc.call('assign',{threadId:thread.id,lead,helpers:current?.helpers.filter(h=>h!==lead)??[],systemMode:mode});}}
    await data.refresh();
